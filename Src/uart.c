@@ -3,20 +3,20 @@
  * @file    uart.c
  * @brief   串口驱动实现（寄存器级，无中断，阻塞式收发）
  *
- * 时钟配置：系统时钟 72MHz
- *   - USART1 挂在 APB2（72MHz）
- *   - USART2 挂在 APB1（36MHz）
- * 波特率 115200：
- *   - USART1 BRR = 72000000 / 115200 = 625.0  -> 0x2710
- *   - USART2 BRR = 36000000 / 115200 = 312.5  -> 0x1388
+ * 时钟配置：系统时钟 64MHz（内部 HSI/2 × PLL16）
+ *   - USART1 挂在 APB2（64MHz）
+ *   - USART2 挂在 APB1（32MHz）
+ * 波特率 115200（BRR 由 uart_calc_brr 自动计算）：
+ *   - USART1 BRR = 64000000 / 115200 = 555.6 -> 0x22B9
+ *   - USART2 BRR = 32000000 / 115200 = 277.8 -> 0x115C
  * ============================================================================
  */
 
 #include "uart.h"
 
 /* APB2 / APB1 总线时钟（Hz），与 system_clock 配置保持一致 */
-#define PCLK2_HZ        72000000UL
-#define PCLK1_HZ        36000000UL
+#define PCLK2_HZ        64000000UL
+#define PCLK1_HZ        32000000UL
 
 /**
  * @brief 计算 USART BRR 寄存器值

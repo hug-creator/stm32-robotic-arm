@@ -62,6 +62,7 @@ typedef struct {
 #define RCC_CFGR_SWS_PLL    (2UL << 2)   /* 系统时钟状态：PLL          */
 #define RCC_CFGR_PLLSRC     (1UL << 16)  /* PLL 时钟源 = HSE           */
 #define RCC_CFGR_PLLMULL9   (7UL << 18)  /* PLL 倍频系数 = 9           */
+#define RCC_CFGR_PLLMULL16  (14UL << 18) /* PLL 倍频系数 = 16          */
 
 /* RCC_APB2ENR 位定义 */
 #define RCC_APB2ENR_AFIOEN  (1UL << 0)   /* 复用功能 IO 时钟           */

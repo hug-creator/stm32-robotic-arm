@@ -112,26 +112,28 @@ static const MotionStep motion_wave[] = {
 /* ============================ 系统时钟 ============================ */
 
 /**
- * @brief 配置系统时钟为 72MHz（HSE 8MHz × PLL9）
- *        同时设置 AHB/APB2 = 72MHz，APB1 = 36MHz
+ * @brief 配置系统时钟为 64MHz（内部 HSI 8MHz/2 × PLL16）
+ *        同时设置 AHB/APB2 = 64MHz，APB1 = 32MHz
+ * @note  使用内部 HSI，不依赖外部晶振，兼容任意 STM32F103 最小系统板
  */
 static void system_clock_config(void)
 {
     uint32_t tmp;
 
-    /* 1. 使能外部高速时钟 HSE，等待就绪 */
-    RCC->CR |= RCC_CR_HSEON;
-    while (!(RCC->CR & RCC_CR_HSERDY)) {
+    /* 1. 使能内部高速时钟 HSI，等待就绪 */
+    RCC->CR |= RCC_CR_HSION;
+    while (!(RCC->CR & RCC_CR_HSIRDY)) {
         ;
     }
 
-    /* 2. 配置 FLASH 等待周期为 2（72MHz 下必需） */
+    /* 2. 配置 FLASH 等待周期为 2（48MHz 以上需要） */
     FLASH->ACR |= FLASH_ACR_LATENCY_2;
 
-    /* 3. 配置 PLL：HSE 源、9 倍频；APB1 二分频（36MHz），APB2 不分频（72MHz） */
+    /* 3. 配置 PLL：HSI/2 源、16 倍频 = 64MHz；APB1 二分频（32MHz），APB2 不分频（64MHz） */
     tmp = RCC->CFGR;
     tmp &= ~((0xFUL << 18) | (0x7UL << 8) | (0x7UL << 11) | (0x1UL << 16));
-    tmp |= RCC_CFGR_PLLSRC | RCC_CFGR_PLLMULL9 | (4UL << 8);
+    /* PLLSRC=0（HSI/2），PLLMULL=16，APB1 二分频 */
+    tmp |= RCC_CFGR_PLLMULL16 | (4UL << 8);
     RCC->CFGR = tmp;
 
     /* 4. 使能 PLL，等待就绪 */
