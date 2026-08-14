@@ -41,6 +41,21 @@
 
 ![软件架构](docs/architecture.svg)
 
+## 🎬 实物演示
+
+### 实物图
+
+| | |
+|---|---|
+| ![机械臂全景](docs/demo-1.jpg) | ![夹取演示](docs/demo-2.jpg) |
+| ![硬件接线](docs/demo-3.jpg) | ![STM32 主控](docs/demo-4.jpg) |
+
+### 演示视频
+
+https://github.com/user-attachments/assets/demo.mp4
+
+> 也可以直接打开 [`docs/demo.mp4`](docs/demo.mp4) 下载观看（GitHub 不支持直接在 README 播放视频）
+
 ## 📦 目录结构
 
 ```
@@ -59,7 +74,12 @@ robotic-arm/
 │   └── system_stm32f10x.c
 ├── docs/
 │   ├── wiring.svg          # 接线图
-│   └── architecture.svg    # 软件架构图
+│   ├── architecture.svg    # 软件架构图
+│   ├── demo-1.jpg          # 实物图：机械臂全景
+│   ├── demo-2.jpg          # 实物图：夹取演示
+│   ├── demo-3.jpg          # 硬件接线
+│   ├── demo-4.jpg          # STM32 主控
+│   └── demo.mp4            # 演示视频
 ├── startup_stm32f10x_md.s  # 启动文件
 └── README.md
 ```
@@ -70,14 +90,6 @@ robotic-arm/
 2. 加入 `startup_stm32f10x_md.s` 与 `Src/` 下所有 `.c`
 3. `Inc/` 加入 Include Paths，勾选 `Use MicroLIB`
 4. 编译生成 `.hex`，用 ST-Link / 串口烧录
-
-## 🎬 演示
-
-> 📷 在此处添加演示图片 / GIF（建议上传到仓库 `docs/demo.gif`，然后引用）：
->
-> ```markdown
-> ![演示](docs/demo.gif)
-> ```
 
 ## 🧭 二次开发
 
