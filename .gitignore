@@ -1,0 +1,29 @@
+# Keil 编译产物
+Objects/
+Listings/
+*.uvguix.*
+*.uvoptx
+*.uvprojx.bak
+*.o
+*.d
+*.crf
+*.axf
+*.hex
+*.htm
+*.lnp
+*.map
+*.plg
+*.bak
+*.dep
+*.lst
+*.iex
+*.sct
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+
+# 系统
+Thumbs.db
+.DS_Store
