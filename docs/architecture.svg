@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 480" font-family="Segoe UI, 'Microsoft YaHei', Arial, sans-serif">
+  <rect width="860" height="480" fill="#ffffff"/>
+  <text x="430" y="42" text-anchor="middle" font-size="24" font-weight="bold" fill="#1a202c">软件架构</text>
+  <text x="430" y="66" text-anchor="middle" font-size="14" fill="#718096">分层结构 · 寄存器级裸机 · 不依赖厂商库</text>
+
+  <!-- 第1层：应用层 -->
+  <rect x="120" y="100" width="620" height="80" rx="10" fill="#ebf4ff" stroke="#2b6cb0" stroke-width="2"/>
+  <text x="430" y="132" text-anchor="middle" font-size="17" font-weight="bold" fill="#2b6cb0">应用层 · main.c</text>
+  <text x="430" y="156" text-anchor="middle" font-size="13" fill="#4a5568">按键扫描 · 动作序列（复位/夹取/欢迎）· 状态机</text>
+
+  <!-- 箭头 -->
+  <path d="M 430 180 L 430 205" stroke="#a0aec0" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 第2层：驱动层 -->
+  <rect x="120" y="205" width="620" height="80" rx="10" fill="#f0fff4" stroke="#2f855a" stroke-width="2"/>
+  <text x="430" y="237" text-anchor="middle" font-size="17" font-weight="bold" fill="#2f855a">驱动层</text>
+  <text x="430" y="261" text-anchor="middle" font-size="13" fill="#4a5568">servo.c（FSUS 舵机协议）· uart.c（串口）· delay.c（SysTick 延时）</text>
+
+  <!-- 箭头 -->
+  <path d="M 430 285 L 430 310" stroke="#a0aec0" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 第3层：寄存器层 -->
+  <rect x="120" y="310" width="620" height="80" rx="10" fill="#fefcbf" stroke="#b7791f" stroke-width="2"/>
+  <text x="430" y="342" text-anchor="middle" font-size="17" font-weight="bold" fill="#b7791f">寄存器层 · stm32f10x.h</text>
+  <text x="430" y="366" text-anchor="middle" font-size="13" fill="#4a5568">RCC / GPIO / USART / SysTick 寄存器定义</text>
+
+  <!-- 箭头 -->
+  <path d="M 430 390 L 430 415" stroke="#a0aec0" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 第4层：硬件 -->
+  <rect x="120" y="415" width="620" height="48" rx="10" fill="#edf2f7" stroke="#718096" stroke-width="2"/>
+  <text x="430" y="445" text-anchor="middle" font-size="16" font-weight="bold" fill="#4a5568">硬件 · STM32F103C8T6 + 串口舵机 + 按键/LED</text>
+
+  <!-- 右侧说明 -->
+  <g font-size="12" fill="#718096">
+    <text x="762" y="150">关键帧动作</text>
+    <text x="762" y="165">数据驱动</text>
+    <text x="762" y="255">FSUS 协议</text>
+    <text x="762" y="270">帧封装+校验</text>
+    <text x="762" y="360">内存映射</text>
+    <text x="762" y="375">寄存器访问</text>
+  </g>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#a0aec0"/>
+    </marker>
+  </defs>
+</svg>

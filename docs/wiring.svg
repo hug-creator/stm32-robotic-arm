@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 560" font-family="Segoe UI, 'Microsoft YaHei', Arial, sans-serif">
+  <rect width="860" height="560" fill="#ffffff"/>
+  <text x="430" y="42" text-anchor="middle" font-size="24" font-weight="bold" fill="#1a202c">机械臂接线图</text>
+  <text x="430" y="66" text-anchor="middle" font-size="14" fill="#718096">STM32F103C8T6 + 4× Fashion Star 串口舵机</text>
+
+  <!-- ============ STM32 主控 ============ -->
+  <rect x="30" y="100" width="240" height="420" rx="12" fill="#ebf4ff" stroke="#2b6cb0" stroke-width="2"/>
+  <text x="150" y="132" text-anchor="middle" font-size="19" font-weight="bold" fill="#2b6cb0">STM32F103C8T6</text>
+  <text x="150" y="154" text-anchor="middle" font-size="12" fill="#4a5568">主控最小系统板</text>
+
+  <!-- 引脚列表 -->
+  <g font-size="14" fill="#2d3748">
+    <text x="50" y="190">PA2 ── TX</text>
+    <text x="50" y="225">PA3 ── RX</text>
+    <text x="50" y="262">PB10 ─ LED1</text>
+    <text x="50" y="287">PB11 ─ LED2</text>
+    <text x="50" y="324">PB12 ─ KEY1</text>
+    <text x="50" y="349">PB13 ─ KEY2</text>
+    <text x="50" y="374">PB14 ─ KEY3</text>
+    <text x="50" y="399">PB15 ─ KEY4</text>
+    <text x="50" y="440" fill="#c53030">VCC 3.3V/5V</text>
+    <text x="50" y="465" fill="#2d3748">GND</text>
+  </g>
+  <line x1="46" y1="490" x2="264" y2="490" stroke="#cbd5e0" stroke-width="1"/>
+
+  <!-- ============ 舵机 ============ -->
+  <rect x="600" y="100" width="240" height="230" rx="12" fill="#f0fff4" stroke="#2f855a" stroke-width="2"/>
+  <text x="720" y="132" text-anchor="middle" font-size="19" font-weight="bold" fill="#2f855a">串口舵机 ×4</text>
+  <text x="720" y="154" text-anchor="middle" font-size="12" fill="#4a5568">Fashion Star（FSUS 协议）</text>
+  <g font-size="14" fill="#2d3748">
+    <text x="620" y="192">ID 1 ─ 底座旋转</text>
+    <text x="620" y="217">ID 2 ─ 大臂</text>
+    <text x="620" y="242">ID 3 ─ 小臂</text>
+    <text x="620" y="267">ID 4 ─ 夹爪</text>
+    <text x="620" y="300" fill="#718096" font-size="12">（同一条 USART2 总线</text>
+    <text x="620" y="318" fill="#718096" font-size="12">　 首尾串联，靠 ID 寻址）</text>
+  </g>
+
+  <!-- ============ 按键/指示灯 ============ -->
+  <rect x="600" y="350" width="240" height="170" rx="12" fill="#fefcbf" stroke="#b7791f" stroke-width="2"/>
+  <text x="720" y="382" text-anchor="middle" font-size="16" font-weight="bold" fill="#b7791f">按键 &amp; 指示灯</text>
+  <g font-size="14" fill="#2d3748">
+    <text x="620" y="412">KEY1 复位 · KEY2 夹取</text>
+    <text x="620" y="437">KEY3 欢迎 · KEY4 停止</text>
+    <text x="620" y="462">LED1 / LED2 状态指示</text>
+    <text x="620" y="495" fill="#718096" font-size="12">（低电平触发，内部上拉）</text>
+  </g>
+
+  <!-- ============ 连线 ============ -->
+  <!-- PA2 TX -> servo -->
+  <path d="M 270 185 C 420 185, 420 165, 600 165" fill="none" stroke="#3182ce" stroke-width="2"/>
+  <text x="435" y="178" text-anchor="middle" font-size="12" fill="#3182ce">USART2 TX → 舵机</text>
+  <!-- PA3 RX -> servo -->
+  <path d="M 270 220 C 420 220, 420 205, 600 205" fill="none" stroke="#3182ce" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="435" y="215" text-anchor="middle" font-size="12" fill="#3182ce">RX ←（可选回读）</text>
+  <!-- PB10/11 -> LED -->
+  <path d="M 270 270 C 420 270, 420 430, 600 430" fill="none" stroke="#ecc94b" stroke-width="2"/>
+  <text x="435" y="350" text-anchor="middle" font-size="12" fill="#b7791f">LED 控制</text>
+  <!-- PB12-15 -> KEY -->
+  <path d="M 270 360 C 420 360, 420 455, 600 455" fill="none" stroke="#ecc94b" stroke-width="2"/>
+  <text x="435" y="420" text-anchor="middle" font-size="12" fill="#b7791f">按键输入</text>
+  <!-- VCC/GND -->
+  <path d="M 270 438 C 420 438, 420 500, 600 500" fill="none" stroke="#c53030" stroke-width="2"/>
+  <path d="M 270 463 C 420 463, 420 515, 600 515" fill="none" stroke="#2d3748" stroke-width="2"/>
+
+  <text x="430" y="545" text-anchor="middle" font-size="12" fill="#a0aec0">注：舵机建议独立供电（5~7.4V），与主控共地</text>
+</svg>

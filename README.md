@@ -1,130 +1,90 @@
-# 四自由度机械臂控制（Robotic Arm Controller）
+<div align="center">
 
-基于 **STM32F103C8T6** 与 **Fashion Star（法山）串口舵机** 的四自由度机械臂控制项目。
-通过按键触发三套动作序列：复位、夹取搬运、挥手欢迎。
+# 🦾 四自由度机械臂控制系统
 
-## 功能特性
+[![MCU](https://img.shields.io/badge/MCU-STM32F103C8T6-blue.svg)]()
+[![Language](https://img.shields.io/badge/Language-C-00599C.svg?logo=c&logoColor=white)]()
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/hug-creator/stm32-robotic-arm.svg?style=social)]()
+[![Last commit](https://img.shields.io/github/last-commit/hug-creator/stm32-robotic-arm.svg)]()
 
-- ✨ **串口舵机控制**：基于 FSUS（Fashion Star UART Servo）协议，通过 USART2 与 4 个舵机通信
-- 🎯 **动作序列编程**：采用"关键帧"方式定义动作，每个关键帧描述"某关节转到某角度、用时多久"，易于修改扩展
-- 🎛️ **按键交互**：复位 / 夹取搬运 / 欢迎挥手 / 停止，四个独立按键
-- 🔔 **状态指示**：LED 指示当前动作执行状态
-- 📟 **调试输出**：USART1 输出运行日志
+基于 **STM32F103C8T6** 与 **4 个串口总线舵机**的四自由度机械臂控制系统。<br/>
+全部代码**寄存器级裸机实现**，不依赖任何厂商库（STM32 标准库 / HAL）。
 
-## 硬件清单（BOM）
+</div>
+
+---
+
+## ✨ 功能特性
+
+- 🤖 **四自由度控制**：底座旋转、大臂、小臂、夹爪，4 个 Fashion Star 串口舵机独立寻址
+- 📡 **FSUS 串口舵机协议**：从零实现帧封装、校验和计算、角度/周期/功率控制
+- 🎬 **三套动作序列**：复位（收纳）、夹取（搬运）、欢迎（挥手），按键一键触发
+- ⏱️ **精确延时**：基于 SysTick 实现微秒/毫秒级延时
+- 🔘 **按键 + LED**：软件消抖，4 键控制 + 2 路 LED 状态指示
+
+## 🧰 硬件清单
 
 | 器件 | 型号 / 规格 | 数量 |
 |------|------------|------|
-| 主控 | STM32F103C8T6 最小系统板（蓝莓派 / Blue Pill） | 1 |
-| 舵机 | Fashion Star 串口舵机（FSUS 协议，如 DTS-xxxx 系列） | 4 |
-| 按键 | 轻触按键（上拉输入，按下接地） | 4 |
+| 主控 | STM32F103C8T6 最小系统板 | 1 |
+| 舵机 | Fashion Star 串口舵机（FSUS 协议） | 4 |
+| 按键 | 轻触按键 | 4 |
 | LED | 发光二极管 + 限流电阻 | 2 |
+| 电源 | 5V / 7.4V（舵机建议独立供电） | 1 |
 
-## 引脚连接
+## 🔌 接线图
 
-### 舵机（USART2，串口通信，多个舵机并联）
+![接线图](docs/wiring.svg)
 
-| STM32 引脚 | 连接 |
-|-----------|------|
-| PA2 | 舵机 RX（串口数据线） |
-| PA3 | 舵机 TX（可读回角度，本项目未用） |
-| GND | 舵机 GND |
-| 5V / 外部电源 | 舵机 VCC（舵机需独立供电，勿从单片机取大电流） |
+## 🏗️ 软件架构
 
-> ⚠️ 舵机是串口舵机，多个舵机通过同一条数据线**并联**，靠内部 ID 区分（本项目使用 ID = 1~4）。
-> 首次使用需用上位机（Fashion Star 官方调试软件）分别设置每个舵机的 ID。
+![软件架构](docs/architecture.svg)
 
-### 按键与 LED（GPIOB）
-
-| STM32 引脚 | 功能 |
-|-----------|------|
-| PB10 | LED1（动作指示） |
-| PB11 | LED2（动作指示） |
-| PB12 | 按键1：复位 |
-| PB13 | 按键2：夹取搬运 |
-| PB14 | 按键3：欢迎挥手 |
-| PB15 | 按键4：停止 / 恢复 |
-
-## 舵机 ID 与关节映射
-
-| 舵机 ID | 关节 | 说明 |
-|---------|------|------|
-| 1 | 底座 | 水平旋转，范围约 -90° ~ +90° |
-| 2 | 大臂 | 俯仰，范围约 -65° ~ 0° |
-| 3 | 小臂 | 俯仰，范围约 -45° ~ +20° |
-| 4 | 夹爪 | 开合，0° = 闭合，30° = 张开 |
-
-> 关节角度范围取决于你的机械结构，代码中可自由调整。
-
-## 软件架构
+## 📦 目录结构
 
 ```
 robotic-arm/
-├── Inc/                    # 头文件
-│   ├── stm32f10x.h         # 寄存器级外设定义（自包含，无厂商库依赖）
+├── Inc/
+│   ├── stm32f10x.h         # 寄存器级外设定义
 │   ├── delay.h             # SysTick 延时
 │   ├── uart.h              # 串口驱动
-│   ├── servo.h             # 串口舵机（FSUS 协议）驱动
-│   └── system_stm32f10x.h  # SystemInit 声明
-├── Src/                    # 源文件
+│   ├── servo.h             # FSUS 舵机协议
+│   └── system_stm32f10x.h
+├── Src/
 │   ├── main.c              # 主程序 + 动作序列 + 按键扫描
 │   ├── delay.c
 │   ├── uart.c
 │   ├── servo.c
 │   └── system_stm32f10x.c
-└── startup_stm32f10x_md.s  # 启动文件（中断向量表）
+├── docs/
+│   ├── wiring.svg          # 接线图
+│   └── architecture.svg    # 软件架构图
+├── startup_stm32f10x_md.s  # 启动文件
+└── README.md
 ```
 
-**核心设计**：所有代码为寄存器级裸机编程，直接读写外设寄存器，不依赖 STM32 标准外设库或 HAL 库，
-便于深入理解 STM32 底层原理。
-
-## 编译与烧录（Keil MDK）
+## 🚀 编译与烧录（Keil MDK）
 
 1. 新建 Keil uVision5 工程，器件选择 **STM32F103C8**
-2. 将 `startup_stm32f10x_md.s`、`Src/` 下所有 `.c` 文件加入工程
-3. 将 `Inc/` 加入头文件搜索路径（Options → C/C++ → Include Paths）
-4. 勾选 `Use MicroLIB`（Options → Target），避免引入标准库堆栈初始化
-5. 编译（Build），无错误后生成 `.hex`
-6. 用 ST-Link / 串口（FLYMCU）烧录到开发板
+2. 加入 `startup_stm32f10x_md.s` 与 `Src/` 下所有 `.c`
+3. `Inc/` 加入 Include Paths，勾选 `Use MicroLIB`
+4. 编译生成 `.hex`，用 ST-Link / 串口烧录
 
-> 使用 GCC 的用户可参考相同的文件清单自行编写 Makefile（需 `arm-none-eabi-gcc`）。
+## 🎬 演示
 
-## 运行演示
+> 📷 在此处添加演示图片 / GIF（建议上传到仓库 `docs/demo.gif`，然后引用）：
+>
+> ```markdown
+> ![演示](docs/demo.gif)
+> ```
 
-1. 上电后 LED 闪烁一次，串口输出 `Robotic Arm Ready`
-2. 按 **PB12** → 机械臂复位到收纳位
-3. 按 **PB13** → 执行一次完整的夹取搬运动作
-4. 按 **PB14** → 执行挥手欢迎动作
-5. 按 **PB15** → 暂停 / 恢复
+## 🧭 二次开发
 
-## 二次开发
+- 动作序列定义在 `main.c` 的 `motion_*[]` 数组中，采用**关键帧**方式，添加新动作只需新增一个数组
+- 舵机角度、周期、功率在 `servo_set_angle()` 中控制，支持 -180°~180°
+- 串口波特率、引脚定义集中在 `uart.h` / `main.c` 顶部
 
-修改动作只需调整 `main.c` 中的关键帧数组，例如：
+## 📄 License
 
-```c
-static const MotionStep motion_home[] = {
-    { SERVO_GRIPPER,  30.0f, MOVE_INTERVAL },
-    { SERVO_ELBOW,     0.0f, MOVE_INTERVAL },
-    ...
-};
-```
-
-- `servo_id`：舵机 ID（1~4）
-- `angle`：目标角度（度，精度 0.1°）
-- `interval`：运动耗时（毫秒）
-
-## 协议说明（FSUS）
-
-串口舵机帧格式（小端序）：
-
-```
-| 帧头 2B | 指令ID 1B | 数据长度 1B | 数据 N B | 校验和 1B |
-  0x4C 0x12   8(ROTATE)     7        [ID][角度][周期][功率]   低8位
-```
-
-- 校验和 = 帧内所有字节求和，取低 8 位
-- 角度编码为 `int16`，单位 0.1°（即 90° → 900）
-
-## License
-
-MIT License —— 本项目代码为原创实现，可自由使用。硬件接线与舵机协议为通用技术，不涉及第三方专有代码。
+[MIT](LICENSE) © hug-creator
