@@ -45,16 +45,14 @@
 
 ### 实物图
 
-| | |
-|---|---|
-| ![机械臂全景](docs/demo-1.jpg) | ![夹取演示](docs/demo-2.jpg) |
-| ![硬件接线](docs/demo-3.jpg) | ![STM32 主控](docs/demo-4.jpg) |
+![机械臂全景](docs/demo.jpg)
 
 ### 演示视频
 
-https://github.com/user-attachments/assets/demo.mp4
+- 视频1：[`docs/demo-1.mp4`](docs/demo-1.mp4)
+- 视频2：[`docs/demo-2.mp4`](docs/demo-2.mp4)
 
-> 也可以直接打开 [`docs/demo.mp4`](docs/demo.mp4) 下载观看（GitHub 不支持直接在 README 播放视频）
+> GitHub 不支持直接在 README 嵌入播放视频，点击上方链接可在线观看或下载。
 
 ## 📦 目录结构
 
@@ -75,11 +73,9 @@ robotic-arm/
 ├── docs/
 │   ├── wiring.svg          # 接线图
 │   ├── architecture.svg    # 软件架构图
-│   ├── demo-1.jpg          # 实物图：机械臂全景
-│   ├── demo-2.jpg          # 实物图：夹取演示
-│   ├── demo-3.jpg          # 硬件接线
-│   ├── demo-4.jpg          # STM32 主控
-│   └── demo.mp4            # 演示视频
+│   ├── demo.jpg            # 机械臂全景
+│   ├── demo-1.mp4          # 演示视频1
+│   └── demo-2.mp4          # 演示视频2
 ├── startup_stm32f10x_md.s  # 启动文件
 └── README.md
 ```
