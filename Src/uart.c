@@ -108,3 +108,16 @@ void uart_send_string(USART_TypeDef *uart, const char *str)
         uart_send_byte(uart, (uint8_t)(*str++));
     }
 }
+
+/**
+ * @brief 阻塞接收单个字节
+ * @note  会一直等待，直到收到数据；调用方需确保对方会发送数据
+ */
+uint8_t uart_recv_byte(USART_TypeDef *uart)
+{
+    /* 等待接收数据寄存器非空 */
+    while (!(uart->SR & USART_SR_RXNE)) {
+        ;
+    }
+    return (uint8_t)(uart->DR & 0xFF);
+}

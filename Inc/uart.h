@@ -21,5 +21,6 @@ void uart_init(void);                                   /* 初始化两个串口
 void uart_send_byte(USART_TypeDef *uart, uint8_t data); /* 发送单字节（阻塞） */
 void uart_send_bytes(USART_TypeDef *uart, const uint8_t *buf, uint16_t len);
 void uart_send_string(USART_TypeDef *uart, const char *str);
+uint8_t uart_recv_byte(USART_TypeDef *uart);            /* 接收单字节（阻塞） */
 
 #endif /* __UART_H */

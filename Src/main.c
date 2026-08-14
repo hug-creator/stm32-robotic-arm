@@ -178,10 +178,48 @@ static void gpio_config(void)
 /* ============================ 动作执行 ============================ */
 
 /**
+ * @brief 等待舵机旋转到位，同时检测停止键（闭环控制 + 可随时急停）
+ * @param servo_id 舵机 ID
+ * @param angle    目标角度（度）
+ * @param interval 预期运动耗时（ms），也作为等待超时上限
+ * @return 1 = 被停止键中断，0 = 到位或超时
+ */
+static uint8_t motion_wait(uint8_t servo_id, float angle, uint16_t interval)
+{
+    float cur;
+    uint32_t elapsed = 0;
+
+    while (elapsed < interval) {
+        /* 1. 检测停止键（低电平有效），消抖后确认 */
+        if (!(GPIOB->IDR & KEY_STOP_BIT)) {
+            delay_ms(20);
+            if (!(GPIOB->IDR & KEY_STOP_BIT)) {
+                return 1;                   /* 停止键按下，中断动作 */
+            }
+        }
+
+        /* 2. 回读角度，判断是否到位 */
+        if (servo_read_angle(servo_id, &cur)) {
+            float err = angle - cur;
+            if (err < 0) {
+                err = -err;
+            }
+            if (err <= FSUS_ANGLE_DEADAREA) {
+                return 0;                   /* 已到位，提前进入下一帧 */
+            }
+        }
+
+        delay_ms(20);
+        elapsed += 20;
+    }
+    return 0;                               /* 超时，进入下一关键帧 */
+}
+
+/**
  * @brief 逐帧执行一套动作序列
  * @param motion 关键帧数组
  * @param count  关键帧数量
- * @note  每个关键帧下发后等待 interval 毫秒，让舵机完成运动
+ * @note  每个关键帧下发后，闭环等待舵机到位；期间可被停止键急停
  */
 static void play_motion(const MotionStep *motion, uint16_t count)
 {
@@ -190,7 +228,9 @@ static void play_motion(const MotionStep *motion, uint16_t count)
     for (i = 0; i < count; i++) {
         servo_set_angle(motion[i].servo_id, motion[i].angle,
                         motion[i].interval, MOVE_POWER);
-        delay_ms(motion[i].interval);
+        if (motion_wait(motion[i].servo_id, motion[i].angle, motion[i].interval)) {
+            return;                         /* 被停止键中断，结束动作 */
+        }
     }
 }
 
@@ -198,27 +238,11 @@ static void play_motion(const MotionStep *motion, uint16_t count)
 
 /**
  * @brief 扫描按键，消抖并触发对应动作
- * @note  返回当前是否处于"停止"状态（停止键按下会暂停动作）
+ * @note  停止键不在此处处理：它由 play_motion() 内部的 motion_wait()
+ *        在动作执行期间实时检测，用于急停当前动作
  */
-static uint8_t g_stop_flag = 0;
-
 static void check_keys(void)
 {
-    /* 停止键：按下切换 停止/恢复 状态 */
-    if (!(GPIOB->IDR & KEY_STOP_BIT)) {
-        delay_ms(20);                       /* 软件消抖 */
-        if (!(GPIOB->IDR & KEY_STOP_BIT)) {
-            g_stop_flag = !g_stop_flag;
-            while (!(GPIOB->IDR & KEY_STOP_BIT)) {
-                ;                           /* 等待松开 */
-            }
-        }
-    }
-
-    if (g_stop_flag) {
-        return;                             /* 停止状态下不响应其他按键 */
-    }
-
     /* 复位键 */
     if (!(GPIOB->IDR & KEY_HOME_BIT)) {
         delay_ms(20);
